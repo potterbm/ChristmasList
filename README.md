@@ -4,6 +4,6 @@ A collaborative Christmas list app written in React Native.
 
 ## Development
 
-Development should take place in a feature branch based on the `develop` branch. Feature branches should look like `feature/descriptive-name-of-feature`.
+Development should take place in one of the `frontend` or `backend` branches. For obvious reasons.
 
-The `master` branch should always be production-ready.
+The `master` branch will require a PR to commit to.
