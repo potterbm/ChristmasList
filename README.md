@@ -2,8 +2,15 @@
 
 A collaborative Christmas list app written in React Native.
 
-## Development
+## Testing
 
-Development should take place in a feature branch based on the `develop` branch. Feature branches should look like `feature/descriptive-name-of-feature`.
+#### Frontend
 
-The `master` branch should always be production-ready.
+You can run the frontend app to test or preview it by navigating to the `frontend/` directory and running
+```
+$ react-native run-ios
+```
+
+#### Backend
+
+You can run a backend server locally
