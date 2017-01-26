@@ -33,19 +33,7 @@ export default class ChristmasList extends Component {
   }
   
   _handleAddPress() {
-    switch(this.refs.nav.navigationContext.currentRoute.title) {
-      
-      case "Events":
-        this.refs.nav.push({
-          title: 'Add Event',
-          component: EventAddScreen,
-          backButtonImage: Icon.getImageSource("chevron-left", 20, "#000000")
-        });
-        break;
-      
-      default:
-        return;
-    }
+    this.refs.nav.push(this.refs.nav.navigationContext.currentRoute.component.addScreenRoute());
   }
   
   render() {
@@ -54,8 +42,11 @@ export default class ChristmasList extends Component {
         initialRoute={{
           component: EventListScreen,
           title: 'Events',
-          rightButtonTitle: '+',
-          onRightButtonPress: this._handleAddPress
+          rightButtonTitle: 'Add',
+          onRightButtonPress: this._handleAddPress,
+          passProps: {
+            handleAddPress: this._handleAddPress
+          }
         }}
         style={{ flex: 1 }}
       />
