@@ -43,11 +43,25 @@ connection.sync({ force: true }).then(async () => {
         nickName: 'Dad'
     });
 
-    await Ideas.create({
-        name: 'New Shoes',
-        description: 'He really needs them',
-        ideaForId: dad.id,
-        ideaById: bryan.id,
-        claimedById: andy.id
-    })
+    const meaghan = await Users.create({
+        firstName: 'Meaghan',
+        lastName: 'Potter',
+        nickName: 'Megs'
+    });
+
+    await Promise.all([
+        Ideas.create({
+            name: 'New Shoes',
+            description: 'He really needs them',
+            ideaForId: dad.id,
+            ideaById: bryan.id,
+            claimedById: andy.id
+        }),
+        Ideas.create({
+            name: 'Puppy Pal for Kai',
+            description: 'Kai could use a friend!',
+            ideaForId: andy.id,
+            ideaById: meaghan.id,
+        }),
+    ]);
 });
