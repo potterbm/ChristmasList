@@ -5,7 +5,9 @@ import resolvers from './resolvers';
 const schema = `
 type Query {
     users: [User]
-    ideas(forUserId: Int!): [Idea]
+    ideasFor(forUserId: Int!): [Idea]
+    ideasBy(byUserId: Int!): [Idea]
+    claimedBy(claimedById: Int!): [Idea]
 }
 
 type Mutation {
@@ -21,6 +23,9 @@ type User {
     firstName: String!
     lastName: String!
     nickName: String!
+    ideasFor: [Idea]
+    ideasBy: [Idea]
+    ideasClaimed: [Idea]
 }
 
 type Idea {

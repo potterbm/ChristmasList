@@ -143,7 +143,7 @@ class CollaboratorListScreen extends Component {
     });
 
     this.state = {
-      "dataSource": props.usersLoading ? ds.cloneWithRows([{ name: "loading", gifts: 0 }]) : ds.cloneWithRows(props.users.map(user => ({ name: user.name, gifts: user.name.length })))
+      "dataSource": props.usersLoading ? ds.cloneWithRows([{ name: "loading", gifts: 0 }]) : ds.cloneWithRows(props.users)
     };
 
     this._showGifts = this._showGifts.bind(this);
@@ -218,6 +218,7 @@ class CollaboratorListScreen extends Component {
 const allUsers = gql`
   query allUsers {
     users {
+      gifts: id,
       name: firstName
     }
   }
