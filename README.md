@@ -29,6 +29,7 @@ The backend can be started with the following command:
 ```bash
 cd backend
 
+yarn install
 yarn start
 ```
 
