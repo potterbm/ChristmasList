@@ -158,13 +158,15 @@ class CollaboratorListScreen extends Component {
     };
   }
   
-  _showGifts() {
+  _showGifts(collaborator) {
+    console.log("Opening stuff");
     this.props.navigator.push({
       component: GiftListScreen,
-      title: 'Gift Ideas',
+      title: `Gift Ideas for ${collaborator.name}`,
       rightButtonTitle: 'Add',
       onRightButtonPress: this.props.handleAddPress,
       passProps: {
+        gifts: collaborator.gifts,
         handleAddPress: this.props.handleAddPress
       }
     });
@@ -179,7 +181,7 @@ class CollaboratorListScreen extends Component {
   
   renderCollaborator(collaborator) {
     return (
-      <CollaboratorListItem name={collaborator.name} gifts={collaborator.gifts} showGifts={this._showGifts} showSettings={this._showSettings} />
+      <CollaboratorListItem collaborator={collaborator} showGifts={this._showGifts} showSettings={this._showSettings} />
     );
   }
   
@@ -218,8 +220,11 @@ class CollaboratorListScreen extends Component {
 const allUsers = gql`
   query allUsers {
     users {
-      gifts: id,
-      name: firstName
+      name: nickName
+      gifts: ideasFor {
+        name
+        description
+      }
     }
   }
 `;
@@ -263,20 +268,7 @@ class GiftListScreen extends Component {
     });
     
     this.state = {
-      "dataSource": ds.cloneWithRows([
-        {
-          "name": "New Shoes",
-          "description": "Shoes description here."
-        },
-        {
-          "name": "Wingsuit",
-          "description": "Wingsuit description goes here."
-        },
-        {
-          "name": "Private Island",
-          "description": "Island description here."
-        }
-      ])
+      "dataSource": ds.cloneWithRows(this.props.gifts)
     };
     
     this._showGiftDetail = this._showGiftDetail.bind(this);

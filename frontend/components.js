@@ -77,9 +77,9 @@ class CollaboratorListItem extends Component {
   
   render() {
     return (
-      <TouchableOpacity style={[globalStyles.row, components.CollaboratorListItem_base]} onPress={this.props.showGifts}>
-        <Text style={components.CollaboratorListItem_name}>{this.props.name}</Text>
-        <Text style={components.CollaboratorListItem_gifts}>{this.props.gifts}</Text>
+      <TouchableOpacity style={[globalStyles.row, components.CollaboratorListItem_base]} onPress={() => { this.props.showGifts(this.props.collaborator) }}>
+        <Text style={components.CollaboratorListItem_name}>{this.props.collaborator.name}</Text>
+        <Text style={components.CollaboratorListItem_gifts}>{this.props.collaborator.gifts.length}</Text>
         <TouchableOpacity onPress={this.props.showSettings}>
           <Icon name="more-vert" size={20}></Icon>
         </TouchableOpacity>
