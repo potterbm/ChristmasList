@@ -26,7 +26,7 @@ react-native run-ios # or: react-native run-android
 ### Running the backend
 
 The backend can be started with the following command:
-```
+```bash
 cd backend
 
 yarn start
