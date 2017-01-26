@@ -32,4 +32,4 @@ cd backend
 yarn start
 ```
 
-Once started, the GraphQL API can be eplored at `http://localhost:8080/graphiql` using [GraphiQL](https://github.com/graphql/graphiql).
+Once started, the GraphQL API can be explored at `http://localhost:8080/graphiql` using [GraphiQL](https://github.com/graphql/graphiql).
