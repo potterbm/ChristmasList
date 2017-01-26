@@ -20,7 +20,4 @@
   "jest": {
     "preset": "react-native"
   },
-  "jshintConfig": {
-    "esversion": 6
-  }
 }

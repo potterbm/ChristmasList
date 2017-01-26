@@ -1,19 +1,27 @@
 import React, { Component, PropTypes } from 'react';
 
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
   ListView,
+  Text,
+  TextInput,
   View
 } from 'react-native';
 
 import {
+  CLButton,
+  CLLinkButton,
+  CLLabel,
+  CLInput,
+  CLMultilineInput,
+  CollaboratorListItem,
   EventListItem,
-  CollaboratorListItem
+  GiftListItem,
+  GiftDetailMessages
 } from './components.js';
 
-import globalStyles, {screens} from './styles.js';
+import globalStyles, {screens, components} from './styles.js';
+
+import Icon from 'react-native-vector-icons/MaterialIcons.js';
 
 class EventListScreen extends Component {
   
@@ -39,11 +47,41 @@ class EventListScreen extends Component {
         }
       ])
     };
+    
+    this._showCollaborators = this._showCollaborators.bind(this);
+    this._showSettings = this._showSettings.bind(this);
+    this.renderEvent = this.renderEvent.bind(this);
+  }
+  
+  static addScreenRoute() {
+    return {
+      title: 'Add Event',
+      component: EventAddScreen
+    };
+  }
+  
+  _showCollaborators() {
+    this.props.navigator.push({
+      component: CollaboratorListScreen,
+      title: 'People',
+      rightButtonTitle: 'Add',
+      onRightButtonPress: this.props.handleAddPress,
+      passProps: {
+        handleAddPress: this.props.handleAddPress
+      }
+    });
+  }
+  
+  _showSettings() {
+    this.props.navigator.push({
+      component: EventEditScreen,
+      title: 'Edit Event'
+    });
   }
   
   renderEvent(event) {
     return (
-      <EventListItem name={event.name} />
+      <EventListItem name={event.name} showCollaborators={this._showCollaborators} showSettings={this._showSettings} />
     );
   }
   
@@ -65,6 +103,11 @@ class EventListScreen extends Component {
 }
 
 class EventAddScreen extends Component {
+  constructor(props) {
+    super(props);
+    
+    this._handleSavePress = this._handleSavePress.bind(this);
+  }
   
   _handleTitleChange(newTitle) {
     
@@ -76,15 +119,10 @@ class EventAddScreen extends Component {
   
   render() {
     return (
-      <View style={[globalStyles.container, screens.EventAdd]}>
-        <Text style={components.EventAdd_title}>Add Event</Text>
-        <Text style={globalStyles.label}>Title</Text>
-        <TextInput
-          style={[globalStyles.input, components.EventAdd_input]}
-          autoFocus={true}
-          onChangeText={this._handleTitleChange}
-        />
-        <Button onPress={this._handleSavePress} title="Add Event" color="#4CAF50" />
+      <View style={[globalStyles.container, globalStyles.screen_container, screens.EventAdd]}>
+        <CLLabel>Title</CLLabel>
+        <CLInput autoFocus={true} onChangeText={this._handleTitleChange} />
+        <CLLinkButton onPress={this._handleSavePress} text="Add Event" />
       </View>
     );
   }
@@ -105,27 +143,54 @@ class CollaboratorListScreen extends Component {
     this.state = {
       "dataSource": ds.cloneWithRows([
         {
-          "name": "New Shoes",
-          "description": "",
+          "name": "Dad",
           "gifts": 8
         },
         {
-          "name": "",
-          "description": "",
+          "name": "Bryan",
           "gifts": 8
         },
         {
-          "name": "",
-          "description": "",
+          "name": "Jon",
           "gifts": 8
         }
       ])
     };
+    
+    this._showGifts = this._showGifts.bind(this);
+    this._showSettings = this._showSettings.bind(this);
+    this.renderCollaborator = this.renderCollaborator.bind(this);
+  }
+  
+  static addScreenRoute() {
+    return {
+      title: 'Add Person',
+      component: CollaboratorAddScreen
+    };
+  }
+  
+  _showGifts() {
+    this.props.navigator.push({
+      component: GiftListScreen,
+      title: 'Gift Ideas',
+      rightButtonTitle: 'Add',
+      onRightButtonPress: this.props.handleAddPress,
+      passProps: {
+        handleAddPress: this.props.handleAddPress
+      }
+    });
+  }
+  
+  _showSettings() {
+    this.props.navigator.push({
+      component: CollaboratorEditScreen,
+      title: 'Edit Person'
+    });
   }
   
   renderCollaborator(collaborator) {
     return (
-      <CollaboratorListItem name={collaborator.name} gifts={collaborator.gifts} />
+      <CollaboratorListItem name={collaborator.name} gifts={collaborator.gifts} showGifts={this._showGifts} showSettings={this._showSettings} />
     );
   }
   
@@ -138,9 +203,7 @@ class CollaboratorListScreen extends Component {
     else {
       return (
         <View style={[globalStyles.footer]}>
-          <Button
-            title="Invite Someone"
-          />
+          <CLButton text="Invite Someone" />
         </View>
       );
     }
@@ -150,7 +213,10 @@ class CollaboratorListScreen extends Component {
     return (
       <View style={[globalStyles.container, screens.CollaboratorList]}>
         <ListView
-          contentContainerStyle={globalStyles.list}
+          dataSource={this.state.dataSource}
+          renderRow={this.renderCollaborator}
+          style={globalStyles.list}
+          contentContainerStyle={globalStyles.list_item_container}
           showsHorizontalScrollIndicator={false}
           directionalLockEnabled={true}
           scrollsToTop={false}
@@ -160,7 +226,7 @@ class CollaboratorListScreen extends Component {
   }
 }
 
-class CllaboratorAddScreen extends Component {
+class CollaboratorAddScreen extends Component {
   
   _handleTitleChange(newTitle) {
     
@@ -172,27 +238,147 @@ class CllaboratorAddScreen extends Component {
   
   render() {
     return (
-      <View style={[globalStyles.container, screens.EventAdd]}>
-        <Text style={components.EventAdd_title}>Add Event</Text>
-        <Text style={globalStyles.label}>Title</Text>
-        <TextInput
-          style={[globalStyles.input, components.EventAdd_input]}
-          autoFocus={true}
-          onChangeText={this._handleTitleChange}
-        />
-        <Button onPress={this._handleSavePress} title="Add Event" color="#4CAF50" />
+      <View style={[globalStyles.screen_container, screens.EventAdd]}>
+        <CLLabel>Title</CLLabel>
+        <CLInput autoFocus={true} onChangeText={this._handleTitleChange} />
+        <CLButton onPress={this._handleSavePress} text="Add Event" />
       </View>
     );
   }
-  
 }
 
 class GiftListScreen extends Component {
+  constructor(props) {
+    super(props);
+    
+    var ds = new ListView.DataSource({
+      "rowHasChanged": function(r1, r2) {
+        return r1 !== r2;
+      }
+    });
+    
+    this.state = {
+      "dataSource": ds.cloneWithRows([
+        {
+          "name": "New Shoes",
+          "description": "Shoes description here."
+        },
+        {
+          "name": "Wingsuit",
+          "description": "Wingsuit description goes here."
+        },
+        {
+          "name": "Private Island",
+          "description": "Island description here."
+        }
+      ])
+    };
+    
+    this._showGiftDetail = this._showGiftDetail.bind(this);
+    this.renderGift = this.renderGift.bind(this);
+  }
+  
+  static addScreenRoute() {
+    return {
+      title: 'Add Gift Idea',
+      component: GiftAddScreen
+    };
+  }
+  
+  _showGiftDetail(gift) {
+    this.props.navigator.push({
+      title: gift.name,
+      component: GiftDetailScreen,
+      passProps: gift
+    });
+  }
+  
+  renderGift(gift) {
+    return (
+      <GiftListItem gift={gift} name={gift.name} description={gift.description} gifts={gift.gifts} showGiftDetail={this._showGiftDetail} />
+    );
+  }
+  
+  renderFooter() {
+    if(this.state.dataSource.getRowCount() > 0) {
+      return (
+        <View />
+      );
+    }
+    else {
+      return (
+        <View style={[globalStyles.footer]}>
+          <CLButton text="Invite Someone" />
+        </View>
+      );
+    }
+  }
+  
   render() {
     return (
-      <View style={[globalStyles.container, screens.GiftList]} />
+      <View style={[globalStyles.container, screens.GiftList]}>
+        <ListView
+          dataSource={this.state.dataSource}
+          renderRow={this.renderGift}
+          style={globalStyles.list}
+          contentContainerStyle={globalStyles.list_item_container}
+          showsHorizontalScrollIndicator={false}
+          directionalLockEnabled={true}
+          scrollsToTop={false}
+        />
+      </View>
     );
   }
 }
 
-export { EventListScreen, CollaboratorListScreen, GiftListScreen };
+class GiftAddScreen extends Component {
+  
+  _handleTitleChange(newTitle) {
+    
+  }
+  
+  _handleSavePress() {
+    this.props.navigator.pop();
+  }
+  
+  render() {
+    return (
+      <View style={[globalStyles.screen_container, screens.GiftAdd]}>
+        <CLLabel>Title</CLLabel>
+        <CLInput style={[globalStyles.input, components.EventAdd_input]} autoFocus={true} onChangeText={this._handleTitleChange} />
+        <CLLabel>Description</CLLabel>
+        <CLMultilineInput></CLMultilineInput>
+        <CLButton onPress={this._handleSavePress} text="Add Event" />
+      </View>
+    );
+  }
+}
+
+class GiftDetailScreen extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      
+    };
+  }
+  
+  render() {
+    return (
+      <View style={[globalStyles.screen_container, screens.GiftDetail]}>
+        <View style={[screens.GiftDetail_meta]}>
+          <Text style={[globalStyles.paragraph]}>{this.props.description}</Text>
+        </View>
+        <GiftDetailMessages />
+      </View>
+    );
+  }
+}
+
+export {
+  CollaboratorListScreen,
+  CollaboratorAddScreen,
+  EventListScreen,
+  EventAddScreen,
+  GiftListScreen
+};

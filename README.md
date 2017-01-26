@@ -2,15 +2,8 @@
 
 A collaborative Christmas list app written in React Native.
 
-## Testing
+## Development
 
-#### Frontend
+Development should take place in one of the `frontend` or `backend` branches. For obvious reasons.
 
-You can run the frontend app to test or preview it by navigating to the `frontend/` directory and running
-```
-$ react-native run-ios
-```
-
-#### Backend
-
-You can run a backend server locally
+The `master` branch will require a PR to commit to.
