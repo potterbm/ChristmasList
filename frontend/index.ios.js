@@ -13,6 +13,9 @@ import {
   View
 } from 'react-native';
 
+import ApolloClient, { createNetworkInterface } from 'apollo-client';
+import { ApolloProvider } from 'react-apollo';
+
 import Icon from 'react-native-vector-icons/MaterialIcons.js';
 
 import globalStyles from './styles.js';
@@ -54,4 +57,14 @@ export default class ChristmasList extends Component {
   }
 }
 
-AppRegistry.registerComponent('ChristmasList', () => ChristmasList);
+const client = new ApolloClient({
+  networkInterface: createNetworkInterface({ uri: 'http://localhost:8080/graphql' }),
+});
+
+const AppWithProvider = () => (
+  <ApolloProvider client={client}>
+    <ChristmasList />
+  </ApolloProvider>
+);
+
+AppRegistry.registerComponent('ChristmasList', () => AppWithProvider);

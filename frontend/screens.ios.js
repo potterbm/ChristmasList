@@ -1,4 +1,6 @@
 import React, { Component, PropTypes } from 'react';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 
 import {
   ListView,
@@ -62,7 +64,7 @@ class EventListScreen extends Component {
   
   _showCollaborators() {
     this.props.navigator.push({
-      component: CollaboratorListScreen,
+      component: CollaboratorListScreenWithData,
       title: 'People',
       rightButtonTitle: 'Add',
       onRightButtonPress: this.props.handleAddPress,
@@ -139,24 +141,11 @@ class CollaboratorListScreen extends Component {
         return r1 !== r2;
       }
     });
-    
+
     this.state = {
-      "dataSource": ds.cloneWithRows([
-        {
-          "name": "Dad",
-          "gifts": 8
-        },
-        {
-          "name": "Bryan",
-          "gifts": 8
-        },
-        {
-          "name": "Jon",
-          "gifts": 8
-        }
-      ])
+      "dataSource": props.usersLoading ? ds.cloneWithRows([{ name: "loading", gifts: 0 }]) : ds.cloneWithRows(props.users.map(user => ({ name: user.name, gifts: user.name.length })))
     };
-    
+
     this._showGifts = this._showGifts.bind(this);
     this._showSettings = this._showSettings.bind(this);
     this.renderCollaborator = this.renderCollaborator.bind(this);
@@ -225,6 +214,21 @@ class CollaboratorListScreen extends Component {
     );
   }
 }
+
+const allUsers = gql`
+  query allUsers {
+    users {
+      name: firstName
+    }
+  }
+`;
+
+const CollaboratorListScreenWithData = graphql(allUsers, {
+  props: ({ ownProps, data: { loading, users } }) => ({
+    usersLoading: loading,
+    users: users
+  })
+})(CollaboratorListScreen);
 
 class CollaboratorAddScreen extends Component {
   
