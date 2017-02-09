@@ -10,13 +10,32 @@ import {
 
 import Icon from 'react-native-vector-icons/MaterialIcons.js';
 
-import globalStyles, {components} from './styles.js';
+import globalStyles, {colors, components} from './styles.js';
+
+class Logo extends Component {
+  render() {
+    return (
+      <View style={[components.logo_container]}>
+        <Text style={[components.logo_text]}>Idea List</Text>
+      </View>
+    );
+  }
+}
 
 class CLButton extends Component {
   render() {
     const text = this.props.title || this.props.text;
     return (
-      <TouchableOpacity style={[globalStyles.button]} onPress={this.props.onPress}><Text style={[globalStyles.button_text]}>{text.toUpperCase()}</Text></TouchableOpacity>
+      <TouchableOpacity style={[globalStyles.button, this.props.style]} onPress={this.props.onPress}><Text style={[globalStyles.button_text]}>{text.toUpperCase()}</Text></TouchableOpacity>
+    );
+  }
+}
+
+class CLWhiteButton extends Component {
+  render() {
+    const text = this.props.title || this.props.text;
+    return (
+      <TouchableOpacity style={[globalStyles.button, globalStyles.white_button, this.props.style]} onPress={this.props.onPress}><Text style={[globalStyles.button_text, globalStyles.white_button_text]}>{text.toUpperCase()}</Text></TouchableOpacity>
     );
   }
 }
@@ -25,7 +44,38 @@ class CLLinkButton extends Component {
   render() {
     const text = this.props.title || this.props.text;
     return (
-      <TouchableOpacity style={[globalStyles.link_button]} onPress={this.props.onPress}><Text style={[globalStyles.link_button_text]}>{text}</Text></TouchableOpacity>
+      <TouchableOpacity style={[globalStyles.link_button, this.props.style]} onPress={this.props.onPress}><Text style={[globalStyles.link_button_text]}>{text}</Text></TouchableOpacity>
+    );
+  }
+}
+
+class CLWhiteLinkButton extends Component {
+  render() {
+    const text = this.props.title || this.props.text;
+    return (
+      <TouchableOpacity style={[globalStyles.link_button, globalStyles.white_link_button, this.props.style]} onPress={this.props.onPress}><Text style={[globalStyles.link_button_text, globalStyles.white_link_button_text]}>{text}</Text></TouchableOpacity>
+    );
+  }
+}
+
+class CLAuthButtonGoogle extends Component {
+  render () {
+    return (
+      <TouchableOpacity style={[globalStyles.button, globalStyles.white_button, globalStyles.auth_button, this.props.style]} onPress={this.props.onPress}>
+        <Icon name="android" size={20} style={[globalStyles.auth_button_icon]}></Icon>
+        <Text style={[globalStyles.button_text, globalStyles.white_button_text, globalStyles.auth_button_text]}>Sign In with Google</Text>
+      </TouchableOpacity>
+    );
+  }
+}
+
+class CLAuthButtonFacebook extends Component {
+  render () {
+    return (
+      <TouchableOpacity style={[globalStyles.button, globalStyles.white_button, globalStyles.auth_button, this.props.style]} onPress={this.props.onPress}>
+        <Icon name="account-circle" size={20} style={[globalStyles.auth_button_icon]}></Icon>
+        <Text style={[globalStyles.button_text, globalStyles.white_button_text, globalStyles.auth_button_text]}>Sign In with Facebook</Text>
+      </TouchableOpacity>
     );
   }
 }
@@ -33,7 +83,15 @@ class CLLinkButton extends Component {
 class CLLabel extends Component {
   render() {
     return (
-      <Text style={globalStyles.label}>Title</Text>
+      <Text style={[globalStyles.label, this.props.style]}>Title</Text>
+    );
+  }
+}
+
+class CLWhiteLabel extends Component {
+  render() {
+    return (
+      <Text style={[globalStyles.label, globalStyles.white_label, this.props.style]}>Title</Text>
     );
   }
 }
@@ -41,7 +99,7 @@ class CLLabel extends Component {
 class CLMultilineInput extends Component {
   render() {
     return (
-      <View style={[globalStyles.input, globalStyles.input_multiline]}>
+      <View style={[globalStyles.input, globalStyles.input_multiline, this.props.style]}>
         <TextInput style={[globalStyles.input_text, globalStyles.input_text_multiline]} autoFocus={this.props.autoFocus} onChangeText={this.props.onChangeText} multiline={true}>{this.props.children}</TextInput>
       </View>
     );
@@ -51,8 +109,31 @@ class CLMultilineInput extends Component {
 class CLInput extends Component {
   render() {
     return (
-      <View style={[globalStyles.input]}>
-        <TextInput style={[globalStyles.input_text]} autoFocus={this.props.autoFocus} onChangeText={this.props.onChangeText}>{this.props.children}</TextInput>
+      <View style={[globalStyles.input, this.props.style]}>
+        <TextInput
+          style={[globalStyles.input_text]}
+          placeholderTextColor="#888888"
+          placeholder={this.props.placeholder}
+          autoFocus={this.props.autoFocus}
+          onChangeText={this.props.onChangeText}
+          value={this.props.value}
+        />
+      </View>
+    );
+  }
+}
+
+class CLWhiteInput extends Component {
+  render() {
+    return (
+      <View style={[globalStyles.input, globalStyles.white_input, this.props.style]}>
+        <TextInput
+          style={[globalStyles.input_text, globalStyles.whit_input_text]}
+          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          placeholder={this.props.placeholder}
+          autoFocus={this.props.autoFocus}
+          onChangeText={this.props.onChangeText}
+        />
       </View>
     );
   }
@@ -62,7 +143,7 @@ class EventListItem extends Component {
   
   render() {
     return (
-      <TouchableOpacity style={[globalStyles.row, components.EventListItem_base]} onPress={this.props.showCollaborators}>
+      <TouchableOpacity style={[globalStyles.row, components.EventListItem_base]} onPress={this.props.showUsers}>
         <Text style={components.EventListItem_name}>{this.props.name}</Text>
         <TouchableOpacity onPress={this.props.showSettings}>
           <Icon name="more-vert" size={20}></Icon>
@@ -73,13 +154,13 @@ class EventListItem extends Component {
   
 }
 
-class CollaboratorListItem extends Component {
+class UserListItem extends Component {
   
   render() {
+    var displayName = this.props.nickName || [this.props.firstName, this.props.lastName.charAt(0).toUpperCase()].join('');
     return (
-      <TouchableOpacity style={[globalStyles.row, components.CollaboratorListItem_base]} onPress={this.props.showGifts}>
-        <Text style={components.CollaboratorListItem_name}>{this.props.name}</Text>
-        <Text style={components.CollaboratorListItem_gifts}>{this.props.gifts}</Text>
+      <TouchableOpacity style={[globalStyles.row, components.UserListItem_base]} onPress={this.props.showIdeas}>
+        <Text style={components.UserListItem_name}>{displayName}</Text>
         <TouchableOpacity onPress={this.props.showSettings}>
           <Icon name="more-vert" size={20}></Icon>
         </TouchableOpacity>
@@ -88,31 +169,31 @@ class CollaboratorListItem extends Component {
   }
 }
 
-class GiftListItem extends Component {
+class IdeaListItem extends Component {
   
   constructor(props) {
     super(props);
     
-    this.handleGiftPress = this.handleGiftPress.bind(this);
+    this.handleIdeaPress = this.handleIdeaPress.bind(this);
   }
   
-  handleGiftPress() {
-    this.props.showGiftDetail(this.props.gift);
+  handleIdeaPress() {
+    this.props.showIdeaDetail(this.props.idea);
   }
   
   render() {
     return (
-      <TouchableOpacity style={[globalStyles.row, components.GiftListItem_base]} onPress={this.handleGiftPress}>
+      <TouchableOpacity style={[globalStyles.row, components.IdeaListItem_base]} onPress={this.handleIdeaPress}>
         <View>
-          <Text style={components.GiftListItem_name}>{this.props.name}</Text>
-          <Text style={components.GiftListItem_description}>{this.props.description}</Text>
+          <Text style={components.IdeaListItem_name}>{this.props.name}</Text>
+          <Text style={components.IdeaListItem_description}>{this.props.description}</Text>
         </View>
       </TouchableOpacity>
     );
   }
 }
 
-class GiftDetailMessages extends Component {
+class IdeaDetailMessages extends Component {
   
   constructor(props) {
     super(props);
@@ -144,8 +225,8 @@ class GiftDetailMessages extends Component {
   
   render() {
     return (
-      <View style={[components.GiftDetailMessages_base]}>
-        <Text style={[globalStyles.small_title]}>CONVERSATION</Text>
+      <View style={[components.IdeaDetailMessages_base]}>
+        <Text style={[globalStyles.small_title, components.IdeaDetailMessages_title]}>CONVERSATION</Text>
         <Conversation messages={this.state.messages} conversation={this.state.conversation} />
       </View>
     );
@@ -199,11 +280,11 @@ class ConversationMessageAvatar extends Component {
       avatar = <Image style={[components.ConversationMessageAvatar_image]} source={{uri: this.props.avatar}} />;
     }
     else {
-      avatar = <Icon name="person" />;
+      avatar = <Icon name="person" size={30} color={colors.cyan} />;
     }
     
     return (
-      <View style={[components.ConversationMessageAvatar_base]}>
+      <View style={[components.ConversationMessageAvatar_base, this.props.style]}>
         {avatar}
         <Text style={[components.ConversationMessageAvatar_name]}>{this.props.name}</Text>
       </View>
@@ -212,15 +293,22 @@ class ConversationMessageAvatar extends Component {
 }
 
 export {
+  CLAuthButtonFacebook,
+  CLAuthButtonGoogle,
   CLButton,
   CLLinkButton,
   CLLabel,
   CLInput,
   CLMultilineInput,
-  CollaboratorListItem,
+  CLWhiteButton,
+  CLWhiteInput,
+  CLWhiteLabel,
+  CLWhiteLinkButton,
+  UserListItem,
   Conversation,
   ConversationMessage,
   EventListItem,
-  GiftListItem,
-  GiftDetailMessages
+  IdeaListItem,
+  IdeaDetailMessages,
+  Logo
 };

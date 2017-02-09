@@ -35,6 +35,7 @@
 		93944E781E33C0EF00A37FF7 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 93944E6E1E33C0EF00A37FF7 /* SimpleLineIcons.ttf */; };
 		93944E791E33C0EF00A37FF7 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 93944E6F1E33C0EF00A37FF7 /* Zocial.ttf */; };
 		93944E9F1E33C1D900A37FF7 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93944E9E1E33C1AA00A37FF7 /* libRNVectorIcons.a */; };
+		93F69EF21E4A3D6200E06252 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93F69ED71E4A3D3F00E06252 /* libBVLinearGradient.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -227,6 +228,13 @@
 			remoteGlobalIDString = 5DBEB1501B18CEA900B34395;
 			remoteInfo = RNVectorIcons;
 		};
+		93F69ED61E4A3D3F00E06252 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93F69ED21E4A3D3E00E06252 /* BVLinearGradient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = BVLinearGradient;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -263,6 +271,7 @@
 		93944E6E1E33C0EF00A37FF7 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SimpleLineIcons.ttf; sourceTree = "<group>"; };
 		93944E6F1E33C0EF00A37FF7 /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
 		93944E991E33C1A900A37FF7 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
+		93F69ED21E4A3D3E00E06252 /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +287,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93F69EF21E4A3D6200E06252 /* libBVLinearGradient.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
@@ -423,6 +433,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				93F69ED21E4A3D3E00E06252 /* BVLinearGradient.xcodeproj */,
 				93944E991E33C1A900A37FF7 /* RNVectorIcons.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -495,6 +506,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		93F69ED31E4A3D3E00E06252 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				93F69ED71E4A3D3F00E06252 /* libBVLinearGradient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -561,6 +580,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = 93F69ED31E4A3D3E00E06252 /* Products */;
+					ProjectRef = 93F69ED21E4A3D3E00E06252 /* BVLinearGradient.xcodeproj */;
+				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
@@ -799,6 +822,13 @@
 			fileType = archive.ar;
 			path = libRNVectorIcons.a;
 			remoteRef = 93944E9D1E33C1AA00A37FF7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93F69ED71E4A3D3F00E06252 /* libBVLinearGradient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libBVLinearGradient.a;
+			remoteRef = 93F69ED61E4A3D3F00E06252 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
