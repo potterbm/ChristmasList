@@ -2,28 +2,157 @@ import React, { Component, PropTypes } from 'react';
 
 import {
   ListView,
+  Switch,
   Text,
   TextInput,
+  TouchableOpacity,
   View
 } from 'react-native';
 
+import {connect, Provider} from 'react-redux';
+
 import {
+  CLAuthButtonFacebook,
+  CLAuthButtonGoogle,
   CLButton,
   CLLinkButton,
   CLLabel,
   CLInput,
   CLMultilineInput,
-  CollaboratorListItem,
+  CLWhiteButton,
+  CLWhiteInput,
+  CLWhiteLinkButton,
+  UserListItem,
   EventListItem,
-  GiftListItem,
-  GiftDetailMessages
+  IdeaListItem,
+  IdeaDetailMessages,
+  Logo
 } from './components.js';
 
-import globalStyles, {screens, components} from './styles.js';
+import actions from './actions.js';
+
+import globalStyles, {colors, screens} from './styles.js';
 
 import Icon from 'react-native-vector-icons/MaterialIcons.js';
+import LinearGradient from 'react-native-linear-gradient';
 
-class EventListScreen extends Component {
+
+class RawLoginRegisterScreen extends Component {
+  
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      oauth: true,
+      username: "",
+      password: ""
+    };
+    
+    this._updateUsername = this._updateUsername.bind(this);
+    this._updatePassword = this._updatePassword.bind(this);
+    this._showEmail = this._showEmail.bind(this);
+    this._showOAuth = this._showOAuth.bind(this);
+    this.doGoogleAuth = this.doGoogleAuth.bind(this);
+    this.doFacebookAuth = this.doFacebookAuth.bind(this);
+    this.doLogin = this.doLogin.bind(this);
+    this.doRegister = this.doRegister.bind(this);
+  }
+  
+  _updateUsername(newUsername) {
+    this.setState({ username: newUsername });
+  }
+  
+  _updatePassword(newPassword) {
+    this.setState({ password: newPassword });
+  }
+  
+  _showEmail() {
+    this.setState({ oauth: false });
+  }
+  
+  _showOAuth() {
+    this.setState({ oauth: true });
+  }
+  
+  doLogin() {
+    this.props.login(this.state.username, this.state.password);
+  }
+  
+  doRegister() {
+    this.props.register(this.state.username, this.state.password);
+  }
+  
+  doGoogleAuth() {
+    this.props.login_google();
+  }
+  
+  doFacebookAuth() {
+    this.props.login_facebook();
+  }
+  
+  _renderOAuth() {
+    return (
+      <LinearGradient start={{x: -0.25, y: -0.25}} end={{x: 1.0, y: 1.0}} locations={[0.0, 0.72, 0.77, 1.0]} colors={[colors.amber, colors.cyan, colors.cyan, colors.dark_cyan]} style={[globalStyles.container, screens.LoginRegisterScreen_base]}>
+        
+        <Logo />
+        <CLAuthButtonFacebook style={screens.LoginRegisterScreen_auth_button} onPress={this.doFacebookAuth} />
+        <CLAuthButtonGoogle style={screens.LoginRegisterScreen_auth_button} onPress={this.doGoogleAuth} />
+        <CLWhiteLinkButton style={screens.LoginRegisterScreen_link_button} title="Don't have an account?" onPress={this._showEmail} />
+      </LinearGradient>
+    );
+  }
+  
+  _renderEmail() {
+    return (
+      <LinearGradient start={{x: -0.25, y: -0.25}} end={{x: 1.0, y: 1.0}} locations={[0.0, 0.72, 0.77, 1.0]} colors={[colors.amber, colors.cyan, colors.cyan, colors.dark_cyan]} style={[globalStyles.container, screens.LoginRegisterScreen_base]}>
+        <CLWhiteInput style={screens.LoginRegisterScreen_input} placeholder="Email" onChangeText={this._updateUsername} />
+        <CLWhiteInput style={screens.LoginRegisterScreen_input} placeholder="Password" onChangeText={this._updatePassword} />
+        
+        <View style={[screens.LoginRegisterScreen_button_container]}>
+          <CLWhiteButton style={screens.LoginRegisterScreen_button} title="Register" onPress={this.doRegister} />
+          <CLWhiteButton style={screens.LoginRegisterScreen_button} title="Log In" onPress={this.doLogin} />
+        </View>
+        <CLWhiteLinkButton style={screens.LoginRegisterScreen_link_button} title="Forgot password?" />
+      </LinearGradient>
+    );
+  }
+  
+  render() {
+    if(this.state.oauth) {
+      return this._renderOAuth();
+    }
+    else {
+      return this._renderEmail();
+    }
+  }
+}
+
+const LoginRegisterScreen = connect(
+  function(state) {
+    return {
+      auth: state.auth
+    };
+  },
+  function(dispatch) {
+    return {
+      login_google: function() {
+        dispatch(actions.login_google());
+      },
+      login_facebook: function() {
+        dispatch(actions.login_facebook());
+      },
+      login_email: function(username, password) {
+        dispatch(actions.login_email(username, password));
+      },
+      register: function(username, password) {
+        dispatch(actions.register(username, password));
+      }
+    };
+  }
+)(RawLoginRegisterScreen);
+
+
+class RawEventListScreen extends Component {
   
   constructor(props) {
     super(props);
@@ -35,21 +164,11 @@ class EventListScreen extends Component {
     });
     
     this.state = {
-      "dataSource": ds.cloneWithRows([
-        {
-          "name": "Christmas 2015"
-        },
-        {
-          "name": "Christmas 2016"
-        },
-        {
-          "name": "Christmas 2017"
-        }
-      ])
+      "dataSource": ds.cloneWithRows(this.props.events)
     };
     
-    this._showCollaborators = this._showCollaborators.bind(this);
-    this._showSettings = this._showSettings.bind(this);
+    this._navigateToUsers = this._navigateToUsers.bind(this);
+    this._navigateToEdit = this._navigateToEdit.bind(this);
     this.renderEvent = this.renderEvent.bind(this);
   }
   
@@ -60,9 +179,9 @@ class EventListScreen extends Component {
     };
   }
   
-  _showCollaborators() {
+  _navigateToUsers() {
     this.props.navigator.push({
-      component: CollaboratorListScreen,
+      component: UserListScreen,
       title: 'People',
       rightButtonTitle: 'Add',
       onRightButtonPress: this.props.handleAddPress,
@@ -72,16 +191,21 @@ class EventListScreen extends Component {
     });
   }
   
-  _showSettings() {
-    this.props.navigator.push({
-      component: EventEditScreen,
-      title: 'Edit Event'
-    });
+  _navigateToEdit(event) {
+    return function() {
+      this.props.navigator.push({
+        component: EventEditScreen,
+        title: 'Edit Event',
+        passProps: {
+          event: event
+        }
+      });
+    }.bind(this);
   }
   
   renderEvent(event) {
     return (
-      <EventListItem name={event.name} showCollaborators={this._showCollaborators} showSettings={this._showSettings} />
+      <EventListItem name={event.name} id={event.id} showUsers={this._navigateToUsers} showSettings={this._navigateToEdit(event)} />
     );
   }
   
@@ -102,26 +226,39 @@ class EventListScreen extends Component {
   }
 }
 
-class EventAddScreen extends Component {
+const EventListScreen = connect(
+  function(state) {
+    return { events: state.events };
+  }
+)(RawEventListScreen);
+
+
+class RawEventAddScreen extends Component {
   constructor(props) {
     super(props);
     
+    this.state = {
+      name: this.props.event.name
+    };
+    
+    this._handleNameChange = this._handleNameChange.bind(this);
     this._handleSavePress = this._handleSavePress.bind(this);
   }
   
-  _handleTitleChange(newTitle) {
-    
+  _handleNameChange(newName) {
+    this.setState({ name: newName });
   }
   
   _handleSavePress() {
+    this.props.addEvent(this.state.name);
     this.props.navigator.pop();
   }
   
   render() {
     return (
       <View style={[globalStyles.container, globalStyles.screen_container, screens.EventAdd]}>
-        <CLLabel>Title</CLLabel>
-        <CLInput autoFocus={true} onChangeText={this._handleTitleChange} />
+        <CLLabel>Name</CLLabel>
+        <CLInput autoFocus={true} onChangeText={this._handleNameChange} />
         <CLLinkButton onPress={this._handleSavePress} text="Add Event" />
       </View>
     );
@@ -129,7 +266,68 @@ class EventAddScreen extends Component {
   
 }
 
-class CollaboratorListScreen extends Component {
+const EventAddScreen = connect(
+  function(state) {
+    return {};
+  },
+  function(dispatch) {
+    return {
+      addEvent: function(name) {
+        dispatch(actions.addEvent(name));
+      }
+    };
+  }
+)(RawEventAddScreen);
+
+
+class RawEventEditScreen extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      name: this.props.event.name
+    };
+    
+    this._handleNameChange = this._handleNameChange.bind(this);
+    this._handleSavePress = this._handleSavePress.bind(this);
+  }
+  
+  _handleNameChange(newName) {
+    this.setState({name: newName});
+  }
+  
+  _handleSavePress() {
+    this.props.editEvent(this.props.event.id, {name: this.state.name});
+    this.props.navigator.pop();
+  }
+  
+  render() {
+    return (
+      <View style={[globalStyles.container, globalStyles.screen_container, screens.EventAdd]}>
+        <CLLabel>Name</CLLabel>
+        <CLInput autoFocus={true} onChangeText={this._handleNameChange} value={this.state.name} />
+        <CLButton onPress={this._handleSavePress} text="Save" />
+      </View>
+    );
+  }
+}
+
+const EventEditScreen = connect(
+  function(state) {
+    return {};
+  },
+  function(dispatch) {
+    return {
+      editEvent: function(id, updated) {
+        dispatch(actions.editEvent(id, updated));
+      }
+    };
+  }
+)(RawEventEditScreen);
+
+
+
+class RawUserListScreen extends Component {
   
   constructor(props) {
     super(props);
@@ -141,38 +339,25 @@ class CollaboratorListScreen extends Component {
     });
     
     this.state = {
-      "dataSource": ds.cloneWithRows([
-        {
-          "name": "Dad",
-          "gifts": 8
-        },
-        {
-          "name": "Bryan",
-          "gifts": 8
-        },
-        {
-          "name": "Jon",
-          "gifts": 8
-        }
-      ])
+      "dataSource": ds.cloneWithRows(this.props.users)
     };
     
-    this._showGifts = this._showGifts.bind(this);
-    this._showSettings = this._showSettings.bind(this);
-    this.renderCollaborator = this.renderCollaborator.bind(this);
+    this._navigateToIdeas = this._navigateToIdeas.bind(this);
+    this._navigateToEdit = this._navigateToEdit.bind(this);
+    this.renderUser = this.renderUser.bind(this);
   }
   
   static addScreenRoute() {
     return {
       title: 'Add Person',
-      component: CollaboratorAddScreen
+      component: UserAddScreen
     };
   }
   
-  _showGifts() {
+  _navigateToIdeas() {
     this.props.navigator.push({
-      component: GiftListScreen,
-      title: 'Gift Ideas',
+      component: IdeaListScreen,
+      title: 'Idea Ideas',
       rightButtonTitle: 'Add',
       onRightButtonPress: this.props.handleAddPress,
       passProps: {
@@ -181,16 +366,19 @@ class CollaboratorListScreen extends Component {
     });
   }
   
-  _showSettings() {
+  _navigateToEdit() {
     this.props.navigator.push({
-      component: CollaboratorEditScreen,
-      title: 'Edit Person'
+      component: UserEditScreen,
+      title: 'Edit Person',
+      passProps: {
+        
+      }
     });
   }
   
-  renderCollaborator(collaborator) {
+  renderUser(user) {
     return (
-      <CollaboratorListItem name={collaborator.name} gifts={collaborator.gifts} showGifts={this._showGifts} showSettings={this._showSettings} />
+      <UserListItem nickName={user.nickName} firstName={user.firstName} lastName={user.lastName} showIdeas={this._navigateToIdeas} showSettings={this._navigateToEdit} />
     );
   }
   
@@ -211,10 +399,10 @@ class CollaboratorListScreen extends Component {
   
   render() {
     return (
-      <View style={[globalStyles.container, screens.CollaboratorList]}>
+      <View style={[globalStyles.container, screens.UserList]}>
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={this.renderCollaborator}
+          renderRow={this.renderUser}
           style={globalStyles.list}
           contentContainerStyle={globalStyles.list_item_container}
           showsHorizontalScrollIndicator={false}
@@ -225,29 +413,104 @@ class CollaboratorListScreen extends Component {
     );
   }
 }
+const UserListScreen = connect(function(state) { return { users: state.users }; })(RawUserListScreen);
 
-class CollaboratorAddScreen extends Component {
-  
-  _handleTitleChange(newTitle) {
+
+class RawUserAddScreen extends Component {
+  constructor(props) {
+    super(props);
     
+    this.state = {
+      name: this.props.user.name
+    };
+    
+    this._handleNameChange = this._handleNameChange.bind(this);
+    this._handleSavePress = this._handleSavePress.bind(this);
+  }
+  
+  _handleNameChange(newName) {
+    this.setState({ name: newName });
   }
   
   _handleSavePress() {
+    this.props.addUser(this.state.name);
     this.props.navigator.pop();
   }
   
   render() {
     return (
-      <View style={[globalStyles.screen_container, screens.EventAdd]}>
-        <CLLabel>Title</CLLabel>
-        <CLInput autoFocus={true} onChangeText={this._handleTitleChange} />
-        <CLButton onPress={this._handleSavePress} text="Add Event" />
+      <View style={[globalStyles.container, globalStyles.screen_container, screens.UserAdd]}>
+        <CLLabel>Name</CLLabel>
+        <CLInput autoFocus={true} onChangeText={this._handleNameChange} />
+        <CLLinkButton onPress={this._handleSavePress} text="Add User" />
       </View>
     );
   }
 }
 
-class GiftListScreen extends Component {
+const UserAddScreen = connect(
+  function(state) {
+    return {};
+  },
+  function(dispatch) {
+    return {
+      addUser: function(name) {
+        dispatch(actions.addUser(name));
+      }
+    };
+  }
+)(RawUserAddScreen);
+
+
+
+class RawUserEditScreen extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      name: this.props.user.name
+    };
+    
+    this._handleNameChange = this._handleNameChange.bind(this);
+    this._handleSavePress = this._handleSavePress.bind(this);
+  }
+  
+  _handleNameChange(newName) {
+    this.setState({ name: newName });
+  }
+  
+  _handleSavePress() {
+    this.props.addUser(this.state.name);
+    this.props.navigator.pop();
+  }
+  
+  render() {
+    return (
+      <View style={[globalStyles.container, globalStyles.screen_container, screens.UserAdd]}>
+        <CLLabel>Name</CLLabel>
+        <CLInput autoFocus={true} onChangeText={this._handleNameChange} />
+        <CLLinkButton onPress={this._handleSavePress} text="Add User" />
+      </View>
+    );
+  }
+}
+
+const UserEditScreen = connect(
+  function(state) {
+    return {};
+  },
+  function(dispatch) {
+    return {
+      addUser: function(name) {
+        dispatch(actions.addUser(name));
+      }
+    };
+  }
+)(RawUserEditScreen);
+
+
+
+class RawIdeaListScreen extends Component {
   constructor(props) {
     super(props);
     
@@ -258,44 +521,31 @@ class GiftListScreen extends Component {
     });
     
     this.state = {
-      "dataSource": ds.cloneWithRows([
-        {
-          "name": "New Shoes",
-          "description": "Shoes description here."
-        },
-        {
-          "name": "Wingsuit",
-          "description": "Wingsuit description goes here."
-        },
-        {
-          "name": "Private Island",
-          "description": "Island description here."
-        }
-      ])
+      "dataSource": ds.cloneWithRows(this.props.ideas)
     };
     
-    this._showGiftDetail = this._showGiftDetail.bind(this);
-    this.renderGift = this.renderGift.bind(this);
+    this._showIdeaDetail = this._showIdeaDetail.bind(this);
+    this.renderIdea = this.renderIdea.bind(this);
   }
   
   static addScreenRoute() {
     return {
-      title: 'Add Gift Idea',
-      component: GiftAddScreen
+      title: 'Add Idea',
+      component: IdeaAddScreen
     };
   }
   
-  _showGiftDetail(gift) {
+  _showIdeaDetail(idea) {
     this.props.navigator.push({
       title: gift.name,
-      component: GiftDetailScreen,
+      component: IdeaDetailScreen,
       passProps: gift
     });
   }
   
-  renderGift(gift) {
+  renderIdea(idea) {
     return (
-      <GiftListItem gift={gift} name={gift.name} description={gift.description} gifts={gift.gifts} showGiftDetail={this._showGiftDetail} />
+      <IdeaListItem idea={idea} name={idea.name} description={idea.description} ideas={idea.ideas} showIdeaDetail={this._showIdeaDetail} />
     );
   }
   
@@ -316,10 +566,10 @@ class GiftListScreen extends Component {
   
   render() {
     return (
-      <View style={[globalStyles.container, screens.GiftList]}>
+      <View style={[globalStyles.container, screens.IdeaList]}>
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={this.renderGift}
+          renderRow={this.renderIdea}
           style={globalStyles.list}
           contentContainerStyle={globalStyles.list_item_container}
           showsHorizontalScrollIndicator={false}
@@ -331,7 +581,15 @@ class GiftListScreen extends Component {
   }
 }
 
-class GiftAddScreen extends Component {
+const IdeaListScreen = connect(
+  function(state) {
+    return { ideas: state.ideas };
+  }
+)(RawIdeaListScreen);
+
+
+
+class IdeaAddScreen extends Component {
   
   _handleTitleChange(newTitle) {
     
@@ -343,7 +601,7 @@ class GiftAddScreen extends Component {
   
   render() {
     return (
-      <View style={[globalStyles.screen_container, screens.GiftAdd]}>
+      <View style={[globalStyles.screen_container, screens.IdeaAdd]}>
         <CLLabel>Title</CLLabel>
         <CLInput style={[globalStyles.input, components.EventAdd_input]} autoFocus={true} onChangeText={this._handleTitleChange} />
         <CLLabel>Description</CLLabel>
@@ -354,7 +612,7 @@ class GiftAddScreen extends Component {
   }
 }
 
-class GiftDetailScreen extends Component {
+class IdeaDetailScreen extends Component {
   constructor(props) {
     super(props);
     
@@ -365,20 +623,22 @@ class GiftDetailScreen extends Component {
   
   render() {
     return (
-      <View style={[globalStyles.screen_container, screens.GiftDetail]}>
-        <View style={[screens.GiftDetail_meta]}>
+      <View style={[globalStyles.screen_container, screens.IdeaDetail]}>
+        <View style={[screens.IdeaDetail_meta]}>
           <Text style={[globalStyles.paragraph]}>{this.props.description}</Text>
         </View>
-        <GiftDetailMessages />
+        <IdeaDetailMessages />
       </View>
     );
   }
 }
 
 export {
-  CollaboratorListScreen,
-  CollaboratorAddScreen,
   EventListScreen,
   EventAddScreen,
-  GiftListScreen
+  EventEditScreen,
+  IdeaListScreen,
+  LoginRegisterScreen,
+  UserListScreen,
+  UserAddScreen
 };
